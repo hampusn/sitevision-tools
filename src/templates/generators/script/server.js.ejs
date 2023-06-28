@@ -1,0 +1,34 @@
+/**
+ * @file <%= props.name %> module
+<% if (props.author) { -%>
+ * @author <%= props.author.name %> <<%= props.author.email %>>
+<% } -%>
+ */
+
+/* globals request */
+/* exported context */
+
+<% if (props.vars) { -%>
+/**
+ * Contains configuration settings.
+ * @type {Object}
+ */
+const settings = {
+<% props.vars.forEach((v) => { -%>
+  <%= v %>: (scriptVariables.<%= v %> != null) ? scriptVariables.<%= v %> : null,
+<% }) -%>
+};
+
+<% } -%>
+/**
+ * Contains the main logic for this script module and 
+ * exports data into the context variable which will be 
+ * used in the velocity template.
+ * 
+ * @return {Object}
+ */
+const context = (function (request) {
+  // ...
+
+  return {};
+})(request);

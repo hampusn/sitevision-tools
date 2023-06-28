@@ -2,22 +2,24 @@ import { GluegunToolbox } from 'gluegun'
 import { Generator, SimpleGenerator } from '../types'
 import Name from '../lib/Name'
 import StringTemplate from '../lib/StringTemplate'
-import { basename, dirname } from 'path'
+// import { basename/* , dirname */ } from 'path'
 import untildify from 'untildify'
 
 module.exports = {
   name: 'generate',
   alias: ['g'],
+  description: 'Generate files for things such as a webapp component, a script module or.',
   run: async (toolbox: GluegunToolbox) => {
     const {
       /* pluginName, */
       parameters,
-       template: { generate },
-       print: { info, error, success, muted },
+      template: { generate },
+      print: { info, error, success, muted },
       /* config, */
+      generators
     } = toolbox
 
-    const generator: Generator | SimpleGenerator = toolbox.getGenerator(parameters.first)
+    const generator: Generator | SimpleGenerator = generators.get(parameters.first)
 
     if (!generator) {
       if (parameters.first) {
@@ -26,7 +28,7 @@ module.exports = {
         error('You need to pass a generator name as an argument.')
       }
 
-      await toolbox.getGenerator('help')?.run()
+      await generators.get('help')?.run()
       
       return null
     }
@@ -47,8 +49,11 @@ module.exports = {
     }
 
     // Simple Generator (template files)
+    const simpleGenerator = generator as SimpleGenerator
     const name = new Name(parameters.second)
-    for (const file of (generator as SimpleGenerator).files) {
+    const data = simpleGenerator.context?.call(null, { name }, toolbox) || { name }
+    const directory = simpleGenerator.dir ? untildify(simpleGenerator.dir) : null
+    for (const file of simpleGenerator.files) {
       if (typeof file.condition === 'function') {
         if (!file.condition.call(null, toolbox)) {
           muted('File skipped. Condition not met.')
@@ -57,39 +62,20 @@ module.exports = {
       }
 
       const path = new StringTemplate(file.target)
-      const data = file.context?.call(null, { name }, toolbox) || { name }
       const fullPath = untildify(path.exec(data))
       const templatePath = untildify(file.template)
 
       generate({
-        template: basename(templatePath),
+        template: templatePath,
         target: fullPath,
         props: data,
-        directory: dirname(templatePath),
+        directory
       }).then(() => {
         success(`Created ${fullPath}`)
       }).catch((err) => {
         error(`${err}`)
       })
     }
-
-
-
-    
-    /* info(parameters) */
-
-    // info(generator)
-    
-
-    // info(toolbox)
-
-    /* await generate({
-      template: 'model.ts.ejs',
-      target: `models/${name}-model.ts`,
-      props: { name },
-    }) */
-
-    /* info(`Generated file at models/${name}-model.ts`) */
   },
 }
 

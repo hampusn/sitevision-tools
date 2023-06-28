@@ -35,6 +35,7 @@
     "deepmerge-ts": "^5.1.0",
     "find-up": "^6.3.0",
     "gluegun": "^5.1.2",
+    "lodash.pick": "^4.4.0",
     "untildify": "^4.0.0"
   },
   "devDependencies": {

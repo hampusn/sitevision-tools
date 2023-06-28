@@ -45,14 +45,6 @@ export type SimpleGeneratorFile = {
   target: string;
 
   /**
-   * 
-   * @param data 
-   * @param toolbox 
-   * @returns 
-   */
-  context?: (data: StringTemplateData, toolbox: GluegunToolbox) => StringTemplateData;
-
-  /**
    * An optional callback which takes the toolbox and 
    * returns a boolean for if the file should be created for not.
    * 
@@ -64,6 +56,19 @@ export type SimpleGeneratorFile = {
 
 export type SimpleGenerator = {
   files: Array<SimpleGeneratorFile>;
+
+  /**
+   * 
+   */
+  dir?: string;
+
+  /**
+   * 
+   * @param data 
+   * @param toolbox 
+   * @returns 
+   */
+  context?: (data: StringTemplateData, toolbox: GluegunToolbox) => StringTemplateData;
 
   /**
    * A description which is shown when generators are listed.

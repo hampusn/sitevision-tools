@@ -4,19 +4,10 @@ module.exports = {
   name: 'config',
   run: async (toolbox: GluegunToolbox) => {
     const {
-      parameters,
-      template: { generate },
+      config,
       print: { info },
     } = toolbox
 
-    const name = parameters.first
-
-    await generate({
-      template: 'model.ts.ejs',
-      target: `models/${name}-model.ts`,
-      props: { name },
-    })
-
-    info(`Generated file at models/${name}-model.ts`)
+    info(config.get({ foo: true, bar: 'yo' }))
   },
 }
