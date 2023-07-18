@@ -1,42 +1,20 @@
 import { GluegunToolbox } from 'gluegun'
 import { parseJson } from '../lib/utils'
-import { ProjectType } from '../consts'
-/* import { cosmiconfigSync } from 'cosmiconfig'
-import { basename, dirname } from 'path' */
+import { ComponentStructureType, ProjectType } from '../consts'
 
 module.exports = {
   name: 'init',
+  alias: ['i'],
   description: 'Initializes a project with a configuration file marking the project root.',
   run: async (toolbox: GluegunToolbox) => {
     const {
-      /* pluginName, */
-      /* parameters, */
       config,
       filesystem,
-      print: { info },
+      print: { info, success, newline },
       prompt,
     } = toolbox
 
-    /*
-    const explorer = cosmiconfigSync(pluginName)
-
-    info(explorer.search())
-
-    const dir = dirname(explorer.search()?.filepath || '')
-    const base = basename(dir)
-
-    info('dir: ' + dir)
-    info('base: ' + base)
-    */
-  /* 
-    toolbox.projectDir = 
-  
-  
-    const rootPath = findUpSync(YEOMAN_CONFIG_FILE_NAME, {
-      cwd: instance.destinationRoot()
-    }) */
-
-    /* const tsConfigExists = filesystem.exists('tsconfig.json') */
+    const tsConfigExists = filesystem.exists('tsconfig.json')
     const manifestContents = filesystem.read('manifest.json')
     let defaultType = ''
 
@@ -50,7 +28,7 @@ module.exports = {
       { message: 'WebApp', name: ProjectType.WEBAPP },
       { message: 'RESTApp', name: ProjectType.RESTAPP },
       { message: 'Website (Sitevision files archive)', name: ProjectType.WEBSITE },
-      { message: 'Other', name: ProjectType.OTHER },
+      { message: 'Unspecified (Inherit from configuration)', name: ProjectType.UNSPECIFIED },
     ]
 
     let initialProject = projectTypes.findIndex(({ name }) => name === defaultType)
@@ -70,9 +48,11 @@ module.exports = {
         initial: initialProject,
         result (value) {
           projectType = value
-          return value
+
+          return value === ProjectType.UNSPECIFIED ? '' : value
         },
       },
+
       {
         type: 'confirm',
         name: 'author.useDefault',
@@ -80,20 +60,25 @@ module.exports = {
         initial: true,
         result (value) {
           useDefaultAuthor = value
+
           return value
         },
       },
+
       {
         type: 'input',
         name: 'author.name',
         message: 'Author name',
         skip: () => useDefaultAuthor,
+        result: (value) => value || undefined,
       },
+
       {
         type: 'input',
         name: 'author.email',
         message: 'Author email',
         skip: () => useDefaultAuthor,
+        result: (value) => value || undefined,
       },
 
       {
@@ -101,8 +86,9 @@ module.exports = {
         name: 'script.cssPrefix',
         message: 'Prefix for css classes (e.g. "sv-")',
         skip: () => projectType !== ProjectType.WEBSITE,
-        result: (value) => String(value).trim(),
+        result: (value) => String(value).trim() || undefined,
       },
+
       {
         type: 'input',
         name: 'script.dir',
@@ -110,121 +96,42 @@ module.exports = {
         skip: () => projectType !== ProjectType.WEBSITE,
         result: (value) => String(value).trim(),
       },
-    ])
 
-
-    config.save(answers)
-    
-
-
-    info(`ANSWERS:`)
-    info(answers)
-    // info(parameters)
-
-    // const myConfig = loadConfig(pluginName, process.cwd())
-
-    /* info(config) */
-
-  },
-}
-
-
-
-/*
-
-
-async initializing () {
-    await injectConf(this);
-
-    this.tsConfigExists = this.fs.exists(this.destinationPath('tsconfig.json'));
-    const manifestContents = await fileContents(this.destinationPath('manifest.json'));
-    if (manifestContents) {
-      this.defaultType = parseJson(manifestContents).type;
-    }
-  }
-
-  async prompting () {
-    const stored = this.config.getAll();
-    this.answers = await this.prompt([
-      {
-        type: 'list',
-        name: 'type',
-        message: 'Select the kind of project you are working on',
-        choices: [
-          { name: 'WebApp', value: PROJECT_TYPE_WEBAPP },
-          { name: 'RESTApp', value: PROJECT_TYPE_RESTAPP },
-          { name: 'Website (Sitevision files archive)', value: PROJECT_TYPE_WEBSITE },
-          { name: 'Other', value: PROJECT_TYPE_OTHER },
-        ],
-        default: typeof stored.type === 'string' ? stored.type : (this.defaultType || PROJECT_TYPE_WEBSITE),
-      },
-      {
-        type: 'confirm',
-        name: 'useDefaultAuthor',
-        message: 'Use default author (resolved from .yo-sitevision.json)?',
-      },
       {
         type: 'input',
-        name: 'author.name',
-        message: 'Author name',
-        when: ({ useDefaultAuthor }) => !useDefaultAuthor,
-      },
-      {
-        type: 'input',
-        name: 'author.email',
-        message: 'Author email',
-        when: ({ useDefaultAuthor }) => !useDefaultAuthor,
-      },
-
-      // Website specific questions
-      {
-        type: 'input',
-        name: 'sm.cssPrefix',
-        message: 'Prefix for css classes (e.g. "sv-")',
-        when: ({ type }) => type === PROJECT_TYPE_WEBSITE,
-        filter: (v) => String(v).trim(),
-        default: stored.sm?.cssPrefix,
-      },
-      {
-        type: 'input',
-        name: 'sm.dir',
-        message: 'Directory to place script modules in relative to project root (e.g. "files/modules")',
-        when: ({ type }) => type === PROJECT_TYPE_WEBSITE,
-        filter: (v) => String(v).trim(),
-        default: stored.sm?.dir,
-      },
-
-      // WebApp specific questions
-      {
-        type: 'input',
-        name: 'app.componentDir',
+        name: 'component.dir',
         message: 'Directory to place components in relative to app root (e.g. "src/components")',
-        when: ({ type }) => type === PROJECT_TYPE_WEBAPP,
-        filter: (v) => String(v).trim(),
-        default: stored.app?.componentDir,
+        skip: () => projectType !== ProjectType.WEBAPP,
+        result: (value) => String(value).trim(),
       },
+
       {
-        type: 'list',
-        name: 'app.componentStructure',
+        type: 'select',
+        name: 'component.structure',
         message: 'Do you want a separate directory for each component or all components together?',
         choices: [
-          { name: 'Directory (components/Component/Component.{js,css})', value: COMPONENT_STRUCTURE_TYPE_DIRECTORY },
-          { name: 'Flat (components/Component.{js,css})', value: COMPONENT_STRUCTURE_TYPE_FLAT },
+          { message: 'Unspecified (Inherit from configuration)', name: ComponentStructureType.UNSPECIFIED },
+          { message: 'Directory ([component.dir]/Component/Component.{js,css})', name: ComponentStructureType.DIRECTORY },
+          { message: 'Flat ([component.dir]/Component.{js,css})', name: ComponentStructureType.FLAT },
         ],
-        when: ({ type }) => type === PROJECT_TYPE_WEBAPP,
-        filter: (v) => String(v).trim(),
-        default: stored.app?.componentStructure,
+        skip: () => projectType !== ProjectType.WEBAPP,
+        initial: 1,
+        result: (value) => value === ComponentStructureType.UNSPECIFIED ? '' : value,
       },
 
-      // App specific questions
       {
         type: 'confirm',
-        name: 'app.useTs',
+        name: 'typescript',
         message: 'Do you use TypeScript?',
-        when: ({ type }) => type === PROJECT_TYPE_WEBAPP || type === PROJECT_TYPE_RESTAPP,
-        default: typeof stored.app?.useTs === 'boolean' ? stored.app?.useTs : this.tsConfigExists,
+        skip: () => projectType !== ProjectType.WEBAPP && projectType !== ProjectType.RESTAPP,
+        initial: tsConfigExists,
       },
-    ]);
-  }
+    ])
 
-*/
+    config.save(answers)
+
+    newline()
+    success(`Stored configuration in ${config.configPath()}`)
+    info(answers)
+  },
+}

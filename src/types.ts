@@ -45,13 +45,14 @@ export type SimpleGeneratorFile = {
   target: string;
 
   /**
-   * An optional callback which takes the toolbox and 
-   * returns a boolean for if the file should be created for not.
+   * An optional callback which takes the toolbox and context from 
+   * SimpleGenerator.context callback. Returns a boolean for if 
+   * the file should be created for not.
    * 
    * @param toolbox 
    * @returns 
    */
-  condition?: (toolbox: GluegunToolbox) => boolean;
+  condition?: (toolbox: GluegunToolbox, contextData?: Record<string, any>) => boolean;
 }
 
 export type SimpleGenerator = {

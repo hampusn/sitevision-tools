@@ -29,9 +29,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "camelcase": "^6.3.0",
     "cosmiconfig": "7.0.1",
-    "decamelize": "^5.0.1",
     "deepmerge-ts": "^5.1.0",
     "find-up": "^6.3.0",
     "gluegun": "^5.1.2",

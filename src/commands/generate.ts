@@ -1,25 +1,18 @@
 import { GluegunToolbox } from 'gluegun'
-import { Generator, SimpleGenerator } from '../types'
-import Name from '../lib/Name'
-import StringTemplate from '../lib/StringTemplate'
-// import { basename/* , dirname */ } from 'path'
-import untildify from 'untildify'
+import { Generator } from '../types'
 
 module.exports = {
   name: 'generate',
   alias: ['g'],
-  description: 'Generate files for things such as a webapp component, a script module or.',
+  description: 'Generate files for things such as a webapp component, a script module or something else.',
   run: async (toolbox: GluegunToolbox) => {
     const {
-      /* pluginName, */
       parameters,
-      template: { generate },
-      print: { info, error, success, muted },
-      /* config, */
+      print: { info, error },
       generators
     } = toolbox
 
-    const generator: Generator | SimpleGenerator = generators.get(parameters.first)
+    const generator: Generator = generators.get(parameters.first)
 
     if (!generator) {
       if (parameters.first) {
@@ -35,7 +28,7 @@ module.exports = {
 
     if (parameters.options.help) {
       if (typeof generator.help === 'function') {
-        await generator.help()
+        await generator.help(toolbox)
       } else if (typeof generator.help === 'string') {
         info(generator.help)
       }
@@ -43,69 +36,8 @@ module.exports = {
       return null
     }
 
-    // Standard Generator (callback logic)
-    if (typeof (generator as Generator).run === 'function') {
-      return await (generator as Generator).run()
-    }
-
-    // Simple Generator (template files)
-    const simpleGenerator = generator as SimpleGenerator
-    const name = new Name(parameters.second)
-    const data = simpleGenerator.context?.call(null, { name }, toolbox) || { name }
-    const directory = simpleGenerator.dir ? untildify(simpleGenerator.dir) : null
-    for (const file of simpleGenerator.files) {
-      if (typeof file.condition === 'function') {
-        if (!file.condition.call(null, toolbox)) {
-          muted('File skipped. Condition not met.')
-          continue;
-        }
-      }
-
-      const path = new StringTemplate(file.target)
-      const fullPath = untildify(path.exec(data))
-      const templatePath = untildify(file.template)
-
-      generate({
-        template: templatePath,
-        target: fullPath,
-        props: data,
-        directory
-      }).then(() => {
-        success(`Created ${fullPath}`)
-      }).catch((err) => {
-        error(`${err}`)
-      })
+    if (typeof generator.run === 'function') {
+      return await generator.run()
     }
   },
 }
-
-/*
-
-{
-  plugin: 'sitevision-tools',
-  command: 'generate',
-  array: [ 'foo', 'bar' ],
-  options: { test: true },
-  raw: [
-    '/Users/hampus/.nvm/versions/node/v18.15.0/bin/node',
-    '/Users/hampus/.nvm/versions/node/v18.15.0/bin/sitevision-tools',
-    'g',
-    'foo',
-    'bar',
-    '--test'
-  ],
-  argv: [
-    '/Users/hampus/.nvm/versions/node/v18.15.0/bin/node',
-    '/Users/hampus/.nvm/versions/node/v18.15.0/bin/sitevision-tools',
-    'g',
-    'foo',
-    'bar',
-    '--test'
-  ],
-  first: 'foo',
-  second: 'bar',
-  third: undefined,
-  string: 'foo bar'
-}
-
-*/

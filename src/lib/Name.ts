@@ -1,5 +1,4 @@
-import camelcase from 'camelcase'
-import decamelize from 'decamelize'
+import { strings } from 'gluegun'
 
 export default class Name {
   raw: string = ''
@@ -14,7 +13,7 @@ export default class Name {
 
   get pascal (): string {
     if (!this._pascal && this.raw) {
-      this._pascal = camelcase(this.raw, { pascalCase: true })
+      this._pascal = strings.pascalCase(this.raw)
     }
 
     return this._pascal
@@ -22,7 +21,7 @@ export default class Name {
 
   get camel (): string {
     if (!this._camel && this.raw) {
-      this._camel = camelcase(this.raw)
+      this._camel = strings.camelCase(this.raw)
     }
 
     return this._camel
@@ -30,7 +29,7 @@ export default class Name {
 
   get hyphend (): string {
     if (!this._hyphend && this.raw) {
-      this._hyphend = decamelize(this.camel, { separator: '-' })
+      this._hyphend = strings.kebabCase(this.raw)
     }
 
     return this._hyphend

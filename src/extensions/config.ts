@@ -1,6 +1,5 @@
 
-// import deepmerge from 'deepmerge'
-import { deepmerge } from 'deepmerge-ts'
+import { deepmergeCustom } from 'deepmerge-ts'
 import { GluegunToolbox } from 'gluegun'
 import { cosmiconfigSync } from 'cosmiconfig'
 import { dirname, resolve } from 'path'
@@ -8,37 +7,35 @@ import * as generators from '../generators'
 import { CONFIG_FILE_NAME } from '../consts'
 import pick from 'lodash.pick'
 
+const deepmerge = deepmergeCustom({
+  mergeOthers(values, utils /*, meta */) {
+    // When string fields are overriden, make sure empty strings 
+    // don't override previous values.
+    if (values.every((v) => typeof v === 'string')) {
+      return values.filter((v) => !!v).pop() || ''
+    }
+
+    return utils.actions.defaultMerge
+  }
+})
+
 export default (toolbox: GluegunToolbox) => {
   const { runtime: { brand } } = toolbox
   const explorer = cosmiconfigSync(brand)
 
   const getParentDir = (dir) => resolve(dir, '..')
 
-  const collectConfigs = () => {
+  const collectConfigs = (onlyConfig = true) => {
     const configs = []
     let dir = ''
-    let conf;
+    let conf
 
     while (conf = explorer.search(dir)) {
-      configs.push(conf.config)
+      configs.unshift(onlyConfig ? conf.config : conf)
       dir = getParentDir(dirname(conf.filepath))
     }
 
     return configs
-  }
-
-  const save = (conf) => {
-    toolbox.filesystem.write(CONFIG_FILE_NAME, {
-      [brand]: conf
-    })
-  }
-
-  const get = (defaults = {}, namespace = brand) => {
-    return deepmerge(
-      toolbox.config[namespace],
-      defaults,
-      pick(toolbox.parameters.options, Object.keys(defaults))
-    )
   }
 
   // Inject deep merged configurations.
@@ -50,10 +47,28 @@ export default (toolbox: GluegunToolbox) => {
       },
     },
     toolbox.config,
-    ...collectConfigs(),
-    {
-      save,
-      get,
-    }
+    ...collectConfigs()
   )
+
+  toolbox.config.getCollected = (): string[] => {
+    return collectConfigs(false).map(conf => conf.filepath)
+  }
+
+  toolbox.config.save = (conf) => {
+    toolbox.filesystem.write(CONFIG_FILE_NAME, {
+      [brand]: conf
+    })
+  }
+
+  toolbox.config.configPath = (): string => {
+    return toolbox.filesystem.path(CONFIG_FILE_NAME)
+  }
+
+  toolbox.config.get = (defaults = {}, namespace = brand) => {
+    return deepmerge(
+      defaults,
+      toolbox.config[namespace],
+      pick(toolbox.parameters.options, Object.keys(defaults))
+    )
+  }
 }

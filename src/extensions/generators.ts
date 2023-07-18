@@ -1,8 +1,52 @@
 import { GluegunToolbox } from 'gluegun'
 import { Generators, Generator, SimpleGenerator, GeneratorWrapper } from '../types'
+import Name from '../lib/Name'
+import StringTemplate from '../lib/StringTemplate'
+import untildify from 'untildify'
 
 module.exports = (toolbox: GluegunToolbox) => {
-  const { runtime: { brand } } = toolbox
+  const {
+    runtime: { brand },
+    print: { muted, success, error, checkmark, xmark },
+    template: { generate },
+    parameters,
+  } = toolbox
+
+  const createGeneratorFromSimple = (simpleGenerator: SimpleGenerator): Generator => {
+    return {
+      async run () {
+        const name = new Name(parameters.second)
+        const data = simpleGenerator.context?.call(null, { name }, toolbox) || { name }
+        const directory = simpleGenerator.dir ? untildify(simpleGenerator.dir) : null
+
+        for (const file of simpleGenerator.files) {
+          if (typeof file.condition === 'function') {
+            if (!file.condition.call(null, toolbox, data)) {
+              muted(`- Skipped template ${file.template})`)
+              continue;
+            }
+          }
+
+          const path = new StringTemplate(file.target)
+          const fullPath = untildify(path.exec(data))
+          const templatePath = untildify(file.template)
+
+          generate({
+            template: templatePath,
+            target: fullPath,
+            props: data,
+            directory
+          }).then(() => {
+            success(`${checkmark} Created ${fullPath}`)
+          }).catch((err) => {
+            error(`${xmark} ${err}`)
+          })
+        }
+      },
+      description: simpleGenerator.description,
+      help: simpleGenerator.help,
+    }
+  }
 
   /**
    * Get all generators from the config object.
@@ -16,15 +60,15 @@ module.exports = (toolbox: GluegunToolbox) => {
   }
 
   /**
-   * Foo Bar
+   * Get a generator by name.
    */
-  const get = (name: string): Generator | SimpleGenerator | null => {
+  const get = (name: string): Generator | null => {
     const generators: Generators = getAll()
 
     if (typeof generators[name] === 'function') {
       return (generators[name] as GeneratorWrapper)(toolbox)
-    } else if (typeof generators[name] === 'object') {
-      return (generators[name] as SimpleGenerator)
+    } else if (typeof generators[name] === 'object' && generators[name] !== null) {
+      return createGeneratorFromSimple(generators[name] as SimpleGenerator)
     }
 
     return null

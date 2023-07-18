@@ -1,6 +1,18 @@
 import { SimpleGenerator } from '../types'
 
 export default <SimpleGenerator>{
+  description: 'Generate files for a script module.',
+  help: (toolbox) => {
+    const { print: { info, newline } } = toolbox
+
+    info('Creates a script (js) and template (velocity) file for a script module in your project.')
+    newline()
+    toolbox.docs.printGeneratorUsage('script', [
+      ['--styles', 'Include a stylesheet (css) (Default: false)'],
+      ['--js', 'Include a client script (js) (Default: false)'],
+      ['--vars', 'A comma separated list with variable names to create a settings object with in the server script (Default: "")'],
+    ])
+  },
   files: [
     {
       template: 'generators/script/server.js.ejs',
@@ -13,65 +25,36 @@ export default <SimpleGenerator>{
     {
       template: 'generators/script/client.js.ejs',
       target: '${name.hyphend}/${name.hyphend}-client.js',
-      condition: (toolbox) => toolbox.parameters.options.js,
+      condition: (toolbox, contextData) => contextData.js,
     },
     {
       template: 'generators/script/styles.css.ejs',
       target: '${name.hyphend}/${name.hyphend}.css',
-      condition: (toolbox) => toolbox.parameters.options.styles,
+      condition: (toolbox, contextData) => contextData.styles,
     },
   ],
   context: (context, toolbox) => {
-    // ...context, styles: toolbox.parameters.options.styles
-    
-    // context.styles = toolbox.parameters.options.styles
-    // context.js = toolbox.parameters.options.js
-    context.author = false
-    context.vars = false
-    context.cssClass = context.name.hyphend
+    const conf = toolbox.config.get({
+      script: {
+        cssPrefix: '',
+        dir: '',
+      },
+      author: {
+        name: '',
+        email: '',
+      },
+      styles: false,
+      js: false,
+      vars: '',
+    })
 
-    // vars: vars !== 'false' ? vars.split(',').map(v => camelCase(v || '')).filter(v => !!v) : false,
+    context.script = conf.script
+    context.author = conf.author?.name || conf.author?.email ? conf.author : false
+    context.vars = conf.vars !== 'false' ? conf.vars.split(',').map(v => toolbox.strings.camelCase(v || '')).filter(v => !!v) : false
+    context.cssClass = context.name.hyphend
+    context.styles = conf.styles
+    context.js = conf.js
     
     return context
   },
-  description: 'Generate files for a script module.',
-  help: 'You can use this however you want.',
 }
-
-/*
-
-writing () {
-    const { name, vars } = this.options;
-    const { author, sm } = this.conf;
-    const camelName = camelCase(name);
-    const hyphendName = decamelize(camelName, { separator: '-' });
-    const context = {
-      name,
-      camelName,
-      hyphendName,
-      cssClass: `${sm.cssPrefix}${hyphendName}`,
-      author,
-    };
-
-    const dirParts = [
-      sm.dir,
-      hyphendName,
-    ];
-
-    this.fs.copyTpl(this.templatePath('server.js.ejs'), this.destinationPath(...dirParts, `${hyphendName}.js`), {
-      ...context,
-      vars: vars !== 'false' ? vars.split(',').map(v => camelCase(v || '')).filter(v => !!v) : false,
-    });
-
-    this.fs.copyTpl(this.templatePath('template.vm.ejs'), this.destinationPath(...dirParts, `${hyphendName}.vm`), context);
-
-    if (this.options.styles) {
-      this.fs.copyTpl(this.templatePath('styles.css.ejs'), this.destinationPath(...dirParts, `${hyphendName}.css`), context);
-    }
-
-    if (this.options.js) {
-      this.fs.copyTpl(this.templatePath('client.js.ejs'), this.destinationPath(...dirParts, `${hyphendName}-client.js`), context);
-    }
-  }
-
-  */

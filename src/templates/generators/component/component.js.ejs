@@ -1,0 +1,16 @@
+import * as React from 'react';
+<% if (props.styles) { -%>
+import styles from './<%- props.name.pascal %>.scss';
+<% } -%>
+
+const <%- props.name.pascal %> = ({ name }) => {
+  return (
+    <div<% if (props.styles) { -%> className={styles.root}<% } -%>>
+      {name}
+    </div>
+  );
+};
+
+<%= props.name.pascal %>.displayName = '<%= props.name.pascal %>';
+
+export default <%- props.name.pascal %>;

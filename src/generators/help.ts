@@ -2,13 +2,14 @@ import { GluegunToolbox } from 'gluegun'
 import { Generators, Generator } from '../types'
 
 export default (toolbox: GluegunToolbox) => <Generator>({
+  description: 'Prints information about the available generators.',
   async run () {
     const {
-      print: { info, table },
+      print: { info, newline, table },
     } = toolbox
 
     const rows = []
-    const generators: Generators = toolbox.getGenerators()
+    const generators: Generators = toolbox.generators.getAll()
 
     for (const [generatorName, gen] of Object.entries(generators)) {
       const desc = typeof gen === 'function' ? gen().description : gen.description
@@ -16,7 +17,10 @@ export default (toolbox: GluegunToolbox) => <Generator>({
       rows.push([ generatorName, desc ])
     }
     
-    info('Available generators:')
+    info('sitevision-tools generate GENERATOR NAME')
+    
+    newline()
+    info('Generators:')
 
     table(
       rows,
@@ -28,5 +32,4 @@ export default (toolbox: GluegunToolbox) => <Generator>({
       },
     )
   },
-  description: 'Prints information about the available generators.'
 })

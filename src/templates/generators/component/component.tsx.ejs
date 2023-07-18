@@ -1,0 +1,20 @@
+import * as React from 'react';
+<% if (props.styles) { -%>
+import styles from './<%- props.name.pascal %>.scss';
+<% } -%>
+
+export interface I<%- props.name.pascal %> {
+  name: string;
+}
+
+const <%- props.name.pascal %>: React.FunctionComponent<I<%- props.name.pascal %>> = ({ name }) => {
+  return (
+    <div<% if (props.styles) { -%> className={styles.root}<% } -%>>
+      {name}
+    </div>
+  );
+};
+
+<%= props.name.pascal %>.displayName = '<%= props.name.pascal %>';
+
+export default <%- props.name.pascal %>;
