@@ -7,7 +7,7 @@ import * as generators from '../generators'
 import { CONFIG_FILE_NAME } from '../consts'
 import pick from 'lodash.pick'
 
-const deepmerge = deepmergeCustom({
+export const deepmerge = deepmergeCustom({
   mergeOthers(values, utils /*, meta */) {
     // When string fields are overriden, make sure empty strings 
     // don't override previous values.
