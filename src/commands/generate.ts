@@ -8,7 +8,7 @@ module.exports = {
   run: async (toolbox: GluegunToolbox) => {
     const {
       parameters,
-      print: { info, error },
+      print: { newline, info, error },
       generators
     } = toolbox
 
@@ -21,6 +21,7 @@ module.exports = {
         error('You need to pass a generator name as an argument.')
       }
 
+      newline()
       await generators.get('help')?.run()
       
       return null
@@ -33,6 +34,14 @@ module.exports = {
         info(generator.help)
       }
 
+      return null
+    }
+
+    if (!parameters.second && !generator.optionalName) {
+      error(`<name> is a required argument.`)
+      newline()
+      await generators.get('help')?.run()
+      
       return null
     }
 

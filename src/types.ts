@@ -27,6 +27,11 @@ export type Generator = {
    * A help text which could print arguments and options for the generator.
    */
   help?: string | Function;
+
+  /**
+   * Assign true if the name parameter (second argument) is optional.
+   */
+  optionalName?: boolean;
 }
 
 export type StringTemplateData = {
@@ -80,4 +85,9 @@ export type SimpleGenerator = {
    * A help text which could print arguments and options for the generator.
    */
   help?: string | Function;
+
+  /**
+   * Assign true if the name parameter (second argument) is optional.
+   */
+  optionalName?: boolean;
 }
