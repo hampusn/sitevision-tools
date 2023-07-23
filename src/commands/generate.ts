@@ -1,11 +1,10 @@
-import { GluegunToolbox } from 'gluegun'
-import { Generator } from '../types'
+import { GenerateCommandToolbox, Generator } from '../types'
 
 module.exports = {
   name: 'generate',
   alias: ['g'],
   description: 'Generate files for things such as a webapp component, a script module or something else.',
-  run: async (toolbox: GluegunToolbox) => {
+  run: async (toolbox: GenerateCommandToolbox) => {
     const {
       parameters,
       print: { newline, info, error },

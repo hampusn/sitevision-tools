@@ -2,6 +2,26 @@ import { GluegunToolbox } from 'gluegun'
 
 // export types
 
+export interface GenerateCommandToolbox extends GluegunToolbox {
+  prompt: null
+  http: null
+  system: null
+  packageManager: null
+}
+
+export interface ConfigCommandToolbox extends GluegunToolbox {
+  prompt: null
+  http: null
+  system: null
+  packageManager: null
+}
+
+export interface InitCommandToolbox extends GluegunToolbox {
+  http: null
+  system: null
+  packageManager: null
+}
+
 export type Generators = {
   [key: string]: GeneratorWrapper | SimpleGenerator;
 }
@@ -9,7 +29,7 @@ export type Generators = {
 /**
  * A function which should a Generator
  */
-export type GeneratorWrapper = (toolbox?: GluegunToolbox) => Generator
+export type GeneratorWrapper = (toolbox?: GenerateCommandToolbox) => Generator
 
 export type Generator = {
   /**
@@ -57,7 +77,7 @@ export type SimpleGeneratorFile = {
    * @param toolbox 
    * @returns 
    */
-  condition?: (toolbox: GluegunToolbox, contextData?: Record<string, any>) => boolean;
+  condition?: (toolbox: GenerateCommandToolbox, contextData?: Record<string, any>) => boolean;
 }
 
 export type SimpleGenerator = {
@@ -74,7 +94,7 @@ export type SimpleGenerator = {
    * @param toolbox 
    * @returns 
    */
-  context?: (data: StringTemplateData, toolbox: GluegunToolbox) => StringTemplateData;
+  context?: (data: StringTemplateData, toolbox: GenerateCommandToolbox) => StringTemplateData;
 
   /**
    * A description which is shown when generators are listed.

@@ -1,12 +1,12 @@
-import { GluegunToolbox } from 'gluegun'
 import { parseJson } from '../lib/utils'
 import { ComponentStructureType, ProjectType } from '../consts'
+import { InitCommandToolbox } from '../types'
 
 module.exports = {
   name: 'init',
   alias: ['i'],
   description: 'Initializes a project with a configuration file marking the project root.',
-  run: async (toolbox: GluegunToolbox) => {
+  run: async (toolbox: InitCommandToolbox) => {
     const {
       config,
       filesystem,

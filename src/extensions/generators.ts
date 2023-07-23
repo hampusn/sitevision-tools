@@ -1,10 +1,9 @@
-import { GluegunToolbox } from 'gluegun'
-import { Generators, Generator, SimpleGenerator, GeneratorWrapper } from '../types'
+import { Generators, Generator, SimpleGenerator, GeneratorWrapper, GenerateCommandToolbox } from '../types'
 import Name from '../lib/Name'
 import StringTemplate from '../lib/StringTemplate'
 import untildify from 'untildify'
 
-module.exports = (toolbox: GluegunToolbox) => {
+module.exports = (toolbox: GenerateCommandToolbox) => {
   const {
     runtime: { brand },
     print: { muted, success, error, checkmark, xmark },

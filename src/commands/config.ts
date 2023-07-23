@@ -1,10 +1,10 @@
-import { GluegunToolbox } from 'gluegun'
+import { ConfigCommandToolbox } from '../types'
 
 module.exports = {
   name: 'config',
   alias: ['c'],
   description: 'Get information about the current configuration in your CWD.',
-  run: async (toolbox: GluegunToolbox) => {
+  run: async (toolbox: ConfigCommandToolbox) => {
     const {
       config,
       print: { info, newline },
