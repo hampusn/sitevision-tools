@@ -1,4 +1,5 @@
 import { GluegunCommand } from 'gluegun'
+import { CLI_NAME } from '../consts'
 
 const command: GluegunCommand = {
   name: 'sitevision-tools',
@@ -9,7 +10,7 @@ const command: GluegunCommand = {
     } = toolbox
 
     newline()
-    info('Sitevision Tools')
+    info(CLI_NAME)
 
     const newVersion = await (async () => {
       try {

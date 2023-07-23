@@ -12,3 +12,4 @@ export const enum ComponentStructureType {
 }
 
 export const CONFIG_FILE_NAME:string = '.sitevision-toolsrc.json'
+export const CLI_NAME:string = 'Sitevision Tools'
