@@ -2,6 +2,8 @@ import { Generators, Generator, SimpleGenerator, GeneratorWrapper, GenerateComma
 import Name from '../lib/Name'
 import StringTemplate from '../lib/StringTemplate'
 import untildify from 'untildify'
+import { relative, join } from 'path'
+import { cwd } from 'process'
 
 module.exports = (toolbox: GenerateCommandToolbox) => {
   const {
@@ -17,6 +19,7 @@ module.exports = (toolbox: GenerateCommandToolbox) => {
         const name = new Name(parameters.second)
         const data = simpleGenerator.context?.call(null, { name }, toolbox) || { name }
         const directory = simpleGenerator.dir ? untildify(simpleGenerator.dir) : null
+        const relativeProjectDirPath = relative(cwd(), toolbox.projectDir)
 
         for (const file of simpleGenerator.files) {
           if (typeof file.condition === 'function') {
@@ -27,7 +30,7 @@ module.exports = (toolbox: GenerateCommandToolbox) => {
           }
 
           const path = new StringTemplate(file.target)
-          const fullPath = untildify(path.exec(data))
+          const fullPath = join(relativeProjectDirPath, path.exec(data))
           const templatePath = untildify(file.template)
 
           generate({
