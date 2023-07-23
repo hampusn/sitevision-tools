@@ -21,7 +21,6 @@ const command: GluegunCommand = {
     })()
     
     const rows = [
-      [ 'Project directory', toolbox.projectDir ],
       [ 'Current version', version() ],
       [ 'New version', String(newVersion) ],
     ]
