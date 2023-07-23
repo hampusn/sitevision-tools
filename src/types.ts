@@ -27,9 +27,9 @@ export type Generators = {
 }
 
 /**
- * A function which should a Generator
+ * A function which should return a Generator.
  */
-export type GeneratorWrapper = (toolbox?: GenerateCommandToolbox) => Generator
+export type GeneratorWrapper = (toolbox?: GenerateCommandToolbox | GluegunToolbox) => Generator
 
 export type Generator = {
   /**
@@ -60,12 +60,12 @@ export type StringTemplateData = {
 
 export type SimpleGeneratorFile = {
   /**
-   * 
+   * A file path to the template. This will be relative to SimpleGenerator.dir if that exists.
    */
   template: string;
 
   /**
-   * 
+   * A relative file path where the file should be created. This is relative from the project root.
    */
   target: string;
 
@@ -73,26 +73,24 @@ export type SimpleGeneratorFile = {
    * An optional callback which takes the toolbox and context from 
    * SimpleGenerator.context callback. Returns a boolean for if 
    * the file should be created for not.
-   * 
-   * @param toolbox 
-   * @returns 
    */
   condition?: (toolbox: GenerateCommandToolbox, contextData?: Record<string, any>) => boolean;
 }
 
 export type SimpleGenerator = {
+  /**
+   * An array of template files to be generated when this generator is used.
+   */
   files: Array<SimpleGeneratorFile>;
 
   /**
-   * 
+   * A directory path to where your template files are located.
    */
   dir?: string;
 
   /**
-   * 
-   * @param data 
-   * @param toolbox 
-   * @returns 
+   * A callback function which can be used to modify the context which is passed to the template files (.ejs).
+   * You will most likely want to extend the data unless you are sure you don't need anything from the default context.
    */
   context?: (data: StringTemplateData, toolbox: GenerateCommandToolbox) => StringTemplateData;
 

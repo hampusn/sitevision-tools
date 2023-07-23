@@ -57,3 +57,58 @@ const settings = {
   iconIdMeta: (scriptVariables.iconIdMeta != null) ? scriptVariables.iconIdMeta : null,
 };
 ```
+
+## Configuration
+
+A configuration file is created with the command `sitevision-tools init` and is placed in the current working directory as `.sitevision-toolsrc.json`. Sitevision Tools uses [`cosmiconfig`](https://github.com/cosmiconfig/cosmiconfig) to find configuration files and the first found will determine the project root. Configurations found further up the structure will be merged in with the most specific values (configuration closest to project root) taking precedence. In this way, you can place generic configuration such as author name/email in your dev/projects folder and have more project specific configuration in your project root.
+
+Please note that `cosmiconfig` does not load multiple configuration files from the same directory. So do make sure that only one configuration file exists in your directory.
+
+
+### Custom generators
+
+Custom generators can easily be added through configuration. Simply add a generator in your configuration under the key path `sitevision-tools.generators`. The key used will be the name of the generator.
+
+In most cases, your custom generators will most likely only generate files based of templates. When that is the case, you can use the signature for a `SimpleGenerator` (see [src/types.ts](https://github.com/hampusn/sitevision-tools/blob/main/src/types.ts)).
+
+When you need to do more than a `SimpleGenerator` allows, you will have to create a `GeneratorWrapper`. A `GeneratorWrapper` is a function which takes the `GluegunToolbox` as an argument and returns a `Generator`. A basic example of a `GeneratorWrapper` and a `SimpleGenerator` is provided below.
+
+```js
+// ~/.sitevision-toolsrc.js
+
+module.exports = {
+  'sitevision-tools': {
+    generators: {
+      custom: (toolbox) => ({
+        async run () {
+          toolbox.print.info('This is a custom generator.')
+          // Logic here
+        },
+        description: 'A description for the custom generator which will be shown in the list of available generators.',
+        help: (toolbox) => {
+          toolbox.print.info('Some helpful information about this custom generator.')
+        },
+      }),
+      simple: {
+        files: [
+          {
+            template: 'component.js.ejs',
+            target: 'component/${name.pascal}/${name.pascal}.js',
+            condition: (toolbox) => toolbox.parameters.options.include,
+          },
+        ],
+        context: (data, toolbox) => ({ ...data, customOption: toolbox.parameters.options.foo }),
+        dir: '~/.sitevision-tools/templates/simple',
+        description: 'A simple custom generator.',
+        help: 'Some helpful information about this generator.',
+      }
+    },
+  }
+}
+```
+
+The examples above will be available with: 
+```sh
+sitevision-tools generate custom <name>
+sitevision-tools generate simple <name> --include --foo
+```
