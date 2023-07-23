@@ -11,6 +11,10 @@ export default class Name {
     this.raw = raw
   }
 
+  /**
+   * Returns the name in pascal case.
+   * "Something peculiar" => "SomethingPeculiar"
+   */
   get pascal (): string {
     if (!this._pascal && this.raw) {
       this._pascal = strings.pascalCase(this.raw)
@@ -19,6 +23,10 @@ export default class Name {
     return this._pascal
   }
 
+  /**
+   * Returns the name in camel case.
+   * "Winter is coming" => "winterIsComing"
+   */
   get camel (): string {
     if (!this._camel && this.raw) {
       this._camel = strings.camelCase(this.raw)
@@ -27,6 +35,10 @@ export default class Name {
     return this._camel
   }
 
+  /**
+   * Returns the name but with all parts lower cased and separated by a hyphen character.
+   * "Lorem Ipsum dolor" => "lorem-ipsum-dolor"
+   */
   get hyphend (): string {
     if (!this._hyphend && this.raw) {
       this._hyphend = strings.kebabCase(this.raw)
@@ -35,6 +47,9 @@ export default class Name {
     return this._hyphend
   }
 
+  /**
+   * Returns the name unmodified/raw.
+   */
   toString (): string {
     return this.raw
   }
