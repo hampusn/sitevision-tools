@@ -44,6 +44,7 @@ module.exports = (toolbox: GenerateCommandToolbox) => {
       },
       description: simpleGenerator.description,
       help: simpleGenerator.help,
+      optionalName: !!simpleGenerator.optionalName,
     }
   }
 
