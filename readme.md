@@ -2,6 +2,7 @@
 
 A command line interface with various utilities for Sitevision development.
 
+> Currently in development (v0.x.x) and might have breaking changes in minors until v1.
 
 ## Commands
 
