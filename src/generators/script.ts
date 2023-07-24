@@ -1,17 +1,17 @@
-import { SimpleGenerator } from '../types'
+import { GeneratorUsageHelp, SimpleGenerator } from '../types'
 
 export default <SimpleGenerator>{
   description: 'Generate files for a script module.',
-  help: (toolbox) => {
-    const { print: { info, newline } } = toolbox
-
-    info('Creates a script (js) and template (velocity) file for a script module in your project.')
-    newline()
-    toolbox.docs.printGeneratorUsage('script', [
-      ['--styles', 'Include a stylesheet (css) (Default: false)'],
-      ['--js', 'Include a client script (js) (Default: false)'],
-      ['--vars', 'A comma separated list with variable names to create a settings object with in the server script (Default: "")'],
-    ])
+  help: <GeneratorUsageHelp>{
+    description: 'Creates a script (js) and template (velocity) file for a script module in your project.',
+    args: [
+      [ 'name', 'The name of the script module. Will be hyphenated for filename and css class.' ],
+    ],
+    options: [
+      ['styles', 'Include a stylesheet (css) (Default: false)'],
+      ['js', 'Include a client script (js) (Default: false)'],
+      ['vars', 'A comma separated list with variable names to create a settings object with in the server script (Default: "")'],
+    ],
   },
   files: [
     {

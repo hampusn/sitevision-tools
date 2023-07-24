@@ -1,16 +1,16 @@
 import { ComponentStructureType } from '../consts'
-import { SimpleGenerator } from '../types'
+import { GeneratorUsageHelp, SimpleGenerator } from '../types'
 
 export default <SimpleGenerator>{
   description: 'Generate a component for your webapp.',
-  help: (toolbox) => {
-    const { print: { info, newline } } = toolbox
-
-    info('Creates files for a component to your webapp.')
-    newline()
-    toolbox.docs.printGeneratorUsage('component', [
-      ['--styles', 'Creates a component stylesheet (Default: false)'],
-    ])
+  help: <GeneratorUsageHelp>{
+    description: 'Creates files for a react component to your webapp.',
+    args: [
+      [ 'name', 'The name of the component. Will be converted to PascalCase for the file names and the react component.' ]
+    ],
+    options: [
+      ['styles', 'Creates a component stylesheet (Default: false)'],
+    ],
   },
   files: [
     {

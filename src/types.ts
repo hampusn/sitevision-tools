@@ -102,10 +102,28 @@ export type SimpleGenerator = {
   /**
    * A help text which could print arguments and options for the generator.
    */
-  help?: string | Function;
+  help?: string | Function | GeneratorUsageHelp;
 
   /**
    * Assign true if the name parameter (second argument) is optional.
    */
   optionalName?: boolean;
 }
+
+export type GeneratorUsageArgument = [
+  name: string,
+  description?: string,
+]
+export type GeneratorUsageOption = [
+  names: string|string[],
+  description?: string,
+]
+
+export type GeneratorUsage = {
+  generatorName: string;
+  description?: string;
+  args?: GeneratorUsageArgument[];
+  options?: GeneratorUsageOption[];
+}
+
+export type GeneratorUsageHelp = Omit<GeneratorUsage, 'generatorName'>

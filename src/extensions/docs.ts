@@ -1,4 +1,5 @@
 import { GluegunToolbox } from 'gluegun'
+import { GeneratorUsage } from '../types'
 
 module.exports = (toolbox: GluegunToolbox) => {
   const {
@@ -6,24 +7,59 @@ module.exports = (toolbox: GluegunToolbox) => {
     print: { info, newline, table },
   } = toolbox
 
-  toolbox.docs = {
-    printGeneratorUsage (generatorName:string, options:string[][] = []) {
-      info(`Usage: ${brand} generate ${generatorName} <name>`)
-
-      if (options && options.length) {
-        newline()
-        info('Options:')
-        table(
-          options,
-          {
-            style: {
-              'padding-left': 1,
-              'padding-right': 2,
-            },
-          },
-        )
-      }
+  const defaultTableOptions = {
+    style: {
+      'padding-left': 1,
+      'padding-right': 2,
     },
+  }
+
+  const hyphenateName = (name: string) => name.length > 1 ? `--${name}` : `-${name}`
+
+  const printGeneratorUsage = (generatorUsage: GeneratorUsage) => {
+    const {
+      generatorName,
+      description,
+      args,
+      options,
+    } = generatorUsage
+
+    if (description) {
+      info(description)
+      newline()
+    }
+
+    const argumentsString = args.map(([ name ]) => `<${name}>`).join(' ')
+    info(`Usage: ${brand} generate ${generatorName} ${argumentsString}`)
+
+    if (args && args.length) {
+      newline()
+      info('Arguments:')
+      table(
+        args,
+        defaultTableOptions,
+      )
+    }
+
+    if (options && options.length) {
+      const normalizedOptions = options.map(([names, description]) => {
+        return [
+          Array.isArray(names) ? names.map(name => hyphenateName(name)).join('|') : hyphenateName(names),
+          description,
+        ]
+      })
+
+      newline()
+      info('Options:')
+      table(
+        normalizedOptions,
+        defaultTableOptions,
+      )
+    }
+  }
+
+  toolbox.docs = {
+    printGeneratorUsage,
     /* ... */
   }
 }
