@@ -14,7 +14,7 @@ module.exports = (toolbox: GluegunToolbox) => {
     },
   }
 
-  const hyphenateName = (name: string) => name.length > 1 ? `--${name}` : `-${name}`
+  const hyphenateOption = (opt: string) => opt.length > 1 ? `--${opt}` : `-${opt}`
 
   const printGeneratorUsage = (generatorUsage: GeneratorUsage) => {
     const {
@@ -44,7 +44,7 @@ module.exports = (toolbox: GluegunToolbox) => {
     if (options && options.length) {
       const normalizedOptions = options.map(([names, description]) => {
         return [
-          Array.isArray(names) ? names.map(name => hyphenateName(name)).join('|') : hyphenateName(names),
+          Array.isArray(names) ? names.map(name => hyphenateOption(name)).join('|') : hyphenateOption(names),
           description,
         ]
       })
