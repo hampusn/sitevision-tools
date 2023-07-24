@@ -1,5 +1,19 @@
 import { StringTemplateData } from '../types'
 
+/**
+ * A simple template language for adding a variant of template literals 
+ * which will be built when used the first time.
+ * 
+ * This is mainly used for adding support for variables in JSON strings.
+ * 
+ * @example
+ * const data = { first: 'Hello', second: { third: 'World!' } };
+ * const aTemplate = '${first} ${second.third}';
+ * const stringTemplate = new StringTemplate(aTemplate);
+ * 
+ * const result = stringTemplate.exec(data);
+ * // "Hello World!"
+ */
 export default class StringTemplate {
   template: string = ''
   private _templateFn: Function = null

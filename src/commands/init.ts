@@ -2,6 +2,12 @@ import { parseJson } from '../lib/utils'
 import { ComponentStructureType, ProjectType } from '../consts'
 import { InitCommandToolbox } from '../types'
 
+/**
+ * TODO:
+ * - Refactor config questions
+ * - Expose questions in plugins for custom questions/data
+ */
+
 module.exports = {
   name: 'init',
   alias: ['i'],
