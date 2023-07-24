@@ -2,6 +2,10 @@
   "name": "sitevision-tools",
   "version": "0.1.1",
   "description": "Scaffolding and other miscellaneous tools for Sitevision development.",
+  "keywords": [
+    "Sitevision",
+    "CLI"
+  ],
   "author": "Hampus Nordin <nordin.hampus@gmail.com> (https://hampus.io/)",
   "types": "build/types/types.d.ts",
   "bin": {
