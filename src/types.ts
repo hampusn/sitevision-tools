@@ -1,22 +1,110 @@
 import { GluegunToolbox } from 'gluegun'
+import { Options } from 'gluegun/build/types/domain/options'
+import { Entry } from 'buttercup'
 
 // export types
 
-export interface GenerateCommandToolbox extends GluegunToolbox {
+/**
+ * Config extension belonging to Sitevision Tools. Extends default config object with helper methods.
+ */
+export type ConfigExtension = Options & {
+  /**
+   * Returns an array with filepaths to all collected config files.
+   */
+  getCollected: () => string[]
+
+  /**
+   * Save a configuration to file (`./.sitevision-toolsrc.json`) under the namespace 'sitevision-tools'.
+   * Should not really be used to store plugin configuration.
+   */
+  save: (conf: Record<string, any>) => void
+
+  /**
+   * TODO: Not used anymore? Remove?
+   */
+  configPath: () => string
+
+  /**
+   * Gets the current configuration merged with defaults. If defaults are used, they can also be overriden with CLI options.
+   * This extension method will normalize the config and unwrap the [brand] key. If you are using this in a plugin, 
+   * pass your plugin name as the namespace to get your plugin config.
+   * 
+   * @example
+   * ```js
+   * // Used in a command 
+   * toolbox.config.get({ foo: { bar: 'yup' } })
+   * ```
+   * 
+   * Call CLI example command without option:
+   * ```sh
+   * $ sitevision-tools example-command
+   * > { foo: { bar: 'yup' }, ... }
+   * ```
+   * 
+   * Call CLI example command with option overriden:
+   * ```sh
+   * $ sitevision-tools example-command --foo.bar nope
+   * > { foo: { bar: 'nope' }, ... }
+   * ```
+   */
+  get: (defaults?: Record<string, any>, namespace?: string) => Record<string, any>
+}
+
+export type DocsExtension = {
+  printGeneratorUsage: (generatorUsage: GeneratorUsage) => void
+}
+
+export type GeneratorsExtension = {
+  getAll: () => Generators
+  get: (name: string) => Generator | null
+}
+
+/**
+ * Absolute path to the current project's root directory.
+ */
+export type ProjectDirExtension = string | null
+
+export type StoreSite = {
+  url:string
+  user:string
+  pass:string
+  title?:string
+}
+
+export type StoreExtension = {
+  getMachineId: () => Promise<string>
+  addSite: (site: StoreSite) => Promise<string>
+  getSite: (url: string, propsOnly?: boolean) => Promise<StoreSite | Entry | null>
+  getSites: () => Promise<StoreSite[]>
+  removeSite: (url: string, skipTrash?: boolean) => Promise<boolean>
+  updateSite: (url: string, updates: Record<string, string>) => Promise<boolean>
+  getStoreStats: () => Promise<Record<string, any>>
+  emptyTrash: () => Promise<boolean>
+}
+
+export interface SitevisionToolsToolbox extends GluegunToolbox {
+  config: ConfigExtension
+  docs: DocsExtension
+  store: StoreExtension
+  projectDir: ProjectDirExtension
+  generators: GeneratorsExtension
+}
+
+export interface GenerateCommandToolbox extends SitevisionToolsToolbox {
   prompt: null
   http: null
   system: null
   packageManager: null
 }
 
-export interface ConfigCommandToolbox extends GluegunToolbox {
+export interface ConfigCommandToolbox extends SitevisionToolsToolbox {
   prompt: null
   http: null
   system: null
   packageManager: null
 }
 
-export interface InitCommandToolbox extends GluegunToolbox {
+export interface InitCommandToolbox extends SitevisionToolsToolbox {
   http: null
   system: null
   packageManager: null
@@ -29,7 +117,7 @@ export type Generators = {
 /**
  * A function which should return a Generator.
  */
-export type GeneratorWrapper = (toolbox?: GenerateCommandToolbox | GluegunToolbox) => Generator
+export type GeneratorWrapper = (toolbox?: GenerateCommandToolbox | SitevisionToolsToolbox | GluegunToolbox) => Generator
 
 export type Generator = {
   /**

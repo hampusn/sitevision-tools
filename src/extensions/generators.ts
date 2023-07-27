@@ -1,4 +1,4 @@
-import { Generators, Generator, SimpleGenerator, GeneratorWrapper, GenerateCommandToolbox, GeneratorUsage, GeneratorUsageHelp } from '../types'
+import { Generators, Generator, SimpleGenerator, GeneratorWrapper, GenerateCommandToolbox, GeneratorUsage, GeneratorUsageHelp, GeneratorsExtension } from '../types'
 import Name from '../lib/Name'
 import StringTemplate from '../lib/StringTemplate'
 import untildify from 'untildify'
@@ -11,11 +11,12 @@ module.exports = (toolbox: GenerateCommandToolbox) => {
     print: { muted, success, error, checkmark, xmark },
     template: { generate },
     parameters,
+    docs,
   } = toolbox
 
   const createGeneratorFromSimple = (generatorName: string, simpleGenerator: SimpleGenerator): Generator => {
     const help = typeof simpleGenerator.help === 'string' || typeof simpleGenerator.help === 'function' ? simpleGenerator.help : (toolbox) => {
-      toolbox.docs.printGeneratorUsage(<GeneratorUsage>{
+      docs.printGeneratorUsage(<GeneratorUsage>{
         generatorName,
         ...(simpleGenerator.help as GeneratorUsageHelp),
       })
@@ -84,7 +85,7 @@ module.exports = (toolbox: GenerateCommandToolbox) => {
     return null
   }
 
-  toolbox.generators = {
+  toolbox.generators = <GeneratorsExtension>{
     getAll,
     get
   }

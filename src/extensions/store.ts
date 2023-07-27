@@ -4,6 +4,7 @@ import { Credentials, DatasourceConfigurationFile, Entry, FileDatasource, Vault,
 import { STORE_FILE } from '../consts'
 import untildify from 'untildify'
 import { escapeRegex, parseOrigin, removeProtocolFromUrl } from '../lib/utils'
+import { StoreExtension, StoreSite } from '../types'
 
 const SITES_GROUP_TITLE: string = 'Websites'
 
@@ -11,6 +12,7 @@ let _machineId: string = ''
 let _vault: Vault = null
 let _credentials: Credentials = null
 let _datasource: FileDatasource = null
+
 
 module.exports = (toolbox: GluegunToolbox) => {
   const {
@@ -29,7 +31,7 @@ module.exports = (toolbox: GluegunToolbox) => {
     return new RegExp(str, 'i')
   }
 
-  const getMachineId = async () => {
+  const getMachineId = async (): Promise<string> => {
     if (!_machineId) {
       _machineId = await machineId()
     }
@@ -107,7 +109,7 @@ module.exports = (toolbox: GluegunToolbox) => {
     const vault = await getVault()
     const sitesGroup = vault.findGroupsByTitle(SITES_GROUP_TITLE)[0] || vault.createGroup(SITES_GROUP_TITLE)
 
-    return sitesGroup.getEntries().map((entry) => entry.getProperties())
+    return <StoreSite[]>sitesGroup.getEntries().map((entry) => entry.getProperties())
   }
 
   const removeSite = async (url, skipTrash = false) => {
@@ -182,7 +184,7 @@ module.exports = (toolbox: GluegunToolbox) => {
     return await datasource.save(vault.format.history, vaultCredentials)
   }
 
-  toolbox.store = {
+  toolbox.store = <StoreExtension>{
     getMachineId,
     addSite,
     getSite,

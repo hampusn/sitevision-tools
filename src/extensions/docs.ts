@@ -1,5 +1,5 @@
 import { GluegunToolbox } from 'gluegun'
-import { GeneratorUsage } from '../types'
+import { DocsExtension, GeneratorUsage } from '../types'
 
 module.exports = (toolbox: GluegunToolbox) => {
   const {
@@ -58,7 +58,7 @@ module.exports = (toolbox: GluegunToolbox) => {
     }
   }
 
-  toolbox.docs = {
+  toolbox.docs = <DocsExtension>{
     printGeneratorUsage,
     /* ... */
   }

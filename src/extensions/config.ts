@@ -6,6 +6,7 @@ import { dirname, resolve } from 'path'
 import * as generators from '../generators'
 import { CONFIG_FILE_NAME } from '../consts'
 import pick from 'lodash.pick'
+import { ConfigExtension } from '../types'
 
 export const deepmerge = deepmergeCustom({
   mergeOthers(values, utils /*, meta */) {
@@ -38,8 +39,30 @@ export default (toolbox: GluegunToolbox) => {
     return configs
   }
 
+  const getCollected = (): string[] => {
+    return collectConfigs(false).map(conf => conf.filepath)
+  }
+
+  const save = (conf) => {
+    toolbox.filesystem.write(CONFIG_FILE_NAME, {
+      [brand]: conf
+    })
+  }
+
+  const configPath = (): string => {
+    return toolbox.filesystem.path(CONFIG_FILE_NAME)
+  }
+
+  const get = (defaults = {}, namespace = brand) => {
+    return deepmerge(
+      defaults,
+      toolbox.config[namespace],
+      pick(toolbox.parameters.options, Object.keys(defaults))
+    )
+  }
+
   // Inject deep merged configurations.
-  toolbox.config = deepmerge(
+  toolbox.config = <ConfigExtension>deepmerge(
     {
       [brand]: {
         // Builtin generators
@@ -47,28 +70,12 @@ export default (toolbox: GluegunToolbox) => {
       },
     },
     toolbox.config,
-    ...collectConfigs()
+    ...collectConfigs(),
+    {
+      getCollected,
+      save,
+      configPath,
+      get
+    }
   )
-
-  toolbox.config.getCollected = (): string[] => {
-    return collectConfigs(false).map(conf => conf.filepath)
-  }
-
-  toolbox.config.save = (conf) => {
-    toolbox.filesystem.write(CONFIG_FILE_NAME, {
-      [brand]: conf
-    })
-  }
-
-  toolbox.config.configPath = (): string => {
-    return toolbox.filesystem.path(CONFIG_FILE_NAME)
-  }
-
-  toolbox.config.get = (defaults = {}, namespace = brand) => {
-    return deepmerge(
-      defaults,
-      toolbox.config[namespace],
-      pick(toolbox.parameters.options, Object.keys(defaults))
-    )
-  }
 }

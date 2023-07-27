@@ -9,6 +9,8 @@ const command: GluegunCommand = {
       meta: { version, checkForUpdate },
     } = toolbox
 
+    info(toolbox)
+
     newline()
     info(CLI_NAME)
 

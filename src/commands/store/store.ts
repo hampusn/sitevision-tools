@@ -1,10 +1,10 @@
-import { GluegunToolbox } from 'gluegun'
+import { SitevisionToolsToolbox } from '../../types'
 
 module.exports = {
   name: 'store',
   alias: ['s'],
   description: 'Credentials store. Main command prints information about the store.',
-  run: async (toolbox: GluegunToolbox) => {
+  run: async (toolbox: SitevisionToolsToolbox) => {
     const {
       print: { info, table, newline },
       store,
