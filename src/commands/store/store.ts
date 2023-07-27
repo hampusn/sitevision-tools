@@ -25,6 +25,7 @@ module.exports = {
     info('Groups')
     table([
       [ 'Name', 'Num entries' ],
+      [ '----', '-----------' ],
       ...stats.groups.map((g) => Object.values(g)),
     ])
   },
