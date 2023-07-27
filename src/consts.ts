@@ -12,4 +12,5 @@ export const enum ComponentStructureType {
 }
 
 export const CONFIG_FILE_NAME:string = '.sitevision-toolsrc.json'
+export const STORE_FILE:string = '~/.sitevision-tools.bcup'
 export const CLI_NAME:string = 'Sitevision Tools'
