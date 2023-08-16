@@ -80,7 +80,7 @@ module.exports = (toolbox: GluegunToolbox) => {
     return _vault
   }
   
-  const addSite = async ({ url, user, pass, title = null }) => {
+  const addSite = async ({ url, user, pass, siteName = '', title = null }) => {
     const vault = await getVault()
     const sitesGroup = vault.findGroupsByTitle(SITES_GROUP_TITLE)[0] || vault.createGroup(SITES_GROUP_TITLE)
 
@@ -93,6 +93,7 @@ module.exports = (toolbox: GluegunToolbox) => {
         .setProperty('url', parseOrigin(url))
         .setProperty('user', user)
         .setProperty('pass', pass)
+        .setProperty('siteName', siteName)
 
     return await commitChanges(vault)
   }
@@ -137,8 +138,10 @@ module.exports = (toolbox: GluegunToolbox) => {
       return false
     }
 
-    // Make sure URL follow URL.origin
-    updates.url = parseOrigin(updates.url)
+    if (updates.url) {
+      // Make sure URL follow URL.origin
+      updates.url = parseOrigin(updates.url)
+    }
 
     // Perform updates of props
     for (const [key, value] of Object.entries(updates)) {

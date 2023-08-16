@@ -15,9 +15,9 @@ module.exports = {
     newline()
     info(`Sites (${sites.length})`)
     table([
-      [ 'Title', 'URL', 'User', 'Pass' ],
-      [ '-----', '---', '----', '----' ],
-      ...sites.map(({ title, url, user, pass }) => [ title, url, user, pass ])
+      [ 'Title', 'URL', 'Site name', 'User', 'Pass' ],
+      [ '-----', '---', '---------', '----', '----' ],
+      ...sites.map(({ title, url, siteName = '', user, pass }) => [ title, url, siteName, user, pass ])
     ])
   }
 }

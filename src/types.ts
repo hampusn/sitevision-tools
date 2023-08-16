@@ -1,6 +1,9 @@
 import { GluegunToolbox } from 'gluegun'
 import { Options } from 'gluegun/build/types/domain/options'
 import { Entry } from 'buttercup'
+import SitevisionApiFactory from './lib/SitevisionApi/Factory'
+import RestApi from './lib/SitevisionApi/RestApi'
+import EditApi from './lib/SitevisionApi/EditApi'
 
 // export types
 
@@ -69,6 +72,7 @@ export type StoreSite = {
   user:string
   pass:string
   title?:string
+  siteName?:string
 }
 
 export type StoreExtension = {
@@ -82,12 +86,19 @@ export type StoreExtension = {
   emptyTrash: () => Promise<boolean>
 }
 
+export type SitevisionApiExtension = {
+  factory: SitevisionApiFactory
+  getRestApiInstance: (siteOrURL: StoreSite | string) => Promise<RestApi>
+  getEditApiInstance: (siteOrURL: StoreSite | string) => Promise<EditApi>
+}
+
 export interface SitevisionToolsToolbox extends GluegunToolbox {
   config: ConfigExtension
   docs: DocsExtension
   store: StoreExtension
   projectDir: ProjectDirExtension
   generators: GeneratorsExtension
+  sitevisionApi: SitevisionApiExtension
 }
 
 export interface GenerateCommandToolbox extends SitevisionToolsToolbox {

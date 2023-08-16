@@ -28,3 +28,10 @@ export const removeProtocolFromUrl = function removeProtocolFromUrl (url: string
 export const escapeRegex = function escapeRegex (str: string): string {
   return str.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&')
 }
+
+export const extractJsonVariableFromHTML = function extractJsonVariableFromHTML (variableName: string, html: string): string {
+  const pattern = new RegExp(`"${variableName}":[\s]*"(.*?(?<!\\\\))"`)
+  const value = pattern.exec(html)?.[1] || null
+
+  return value ? value.replace(/\\"/g, '"') : null
+}

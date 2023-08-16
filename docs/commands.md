@@ -37,3 +37,41 @@ sitevision-tools c
 ```
 
 Prints paths to the found and merged config files and also the resulting configuration.
+
+## store|s
+
+> TODO
+
+```
+sitevision-tools store
+sitevision-tools s
+```
+ 
+Credentials store. Main command prints information about the store. See sub commands below for specific usage.
+
+### store add-site|add
+
+```
+sitevision-tools store add-site --title
+```
+
+Store credentials for a site.
+
+### store empty-trash|empty|et
+
+Empty trash in store.
+
+### store list-sites|list|ls
+
+Lists all sites in store.
+
+### store remove-site|remove|rm
+
+Remove a site from store.
+
+### store show-site|show
+
+Show credentials for a stored site.
+
+### store update-site (update, up)
+Update stored data for a site.
