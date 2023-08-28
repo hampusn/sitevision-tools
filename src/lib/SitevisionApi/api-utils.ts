@@ -11,4 +11,3 @@ export const getDefaultTransporterOptions = (site, { rejectUnauthorized = false 
   },
   httpsAgent: rejectUnauthorized ? new https.Agent({ rejectUnauthorized: false }) : null
 })
-

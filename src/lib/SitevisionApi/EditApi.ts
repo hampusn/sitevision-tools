@@ -43,11 +43,13 @@ export default class EditApi extends Api {
     */
   }
 
-  
+  async put (url: string, data?: any) {
+    
+  }
 
 
-  async setAddonActiveVersion (addonIdentifier: string, versionOrIdentifier: string) : Promise<boolean> {
-    const { ok, data, originalError } = await this._transporter.put(`/${versionOrIdentifier}/${addonIdentifier}/setToCurrentCustomModuleExecutable/${versionOrIdentifier}`)
+  async setAddonActiveVersion (addonIdentifier: string, versionIdentifier: string) : Promise<boolean> {
+    const { ok, data, originalError } = await this._transporter.put(`/${versionIdentifier}/${addonIdentifier}/setToCurrentCustomModuleExecutable/${versionIdentifier}`)
 
     if (!ok || !(data as Record<string, any>).success) {
       print.error(originalError)
