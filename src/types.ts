@@ -57,6 +57,10 @@ export type DocsExtension = {
   printGeneratorUsage: (generatorUsage: GeneratorUsage) => void
 }
 
+export type FlagsExtension = {
+  verbose:boolean
+}
+
 export type GeneratorsExtension = {
   getAll: () => Generators
   get: (name: string) => Generator | null
@@ -99,6 +103,7 @@ export interface SitevisionToolsToolbox extends GluegunToolbox {
   projectDir: ProjectDirExtension
   generators: GeneratorsExtension
   sitevisionApi: SitevisionApiExtension
+  flags: FlagsExtension
 }
 
 export interface GenerateCommandToolbox extends SitevisionToolsToolbox {
