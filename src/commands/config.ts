@@ -7,14 +7,17 @@ module.exports = {
   run: async (toolbox: ConfigCommandToolbox) => {
     const {
       config,
-      print: { info, newline },
+      print: { info, muted, newline },
+      flags,
     } = toolbox
 
     info('Collected configurations:')
     config.getCollected().map(fp => info(`- ${fp}`))
     
-    newline()
-    info('Merged configuration:')
-    info(config.get())
+    if (flags.verbose) {
+      newline()
+      muted('Merged configuration:')
+      muted(config.get())
+    }
   },
 }
