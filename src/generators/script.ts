@@ -16,20 +16,20 @@ export default <SimpleGenerator>{
   files: [
     {
       template: 'generators/script/server.js.ejs',
-      target: '${name.hyphend}/${name.hyphend}-server.js',
+      target: '${script.dir}${name.hyphend}/${name.hyphend}-server.js',
     },
     {
       template: 'generators/script/template.vm.ejs',
-      target: '${name.hyphend}/${name.hyphend}.vm',
+      target: '${script.dir}${name.hyphend}/${name.hyphend}.vm',
     },
     {
       template: 'generators/script/client.js.ejs',
-      target: '${name.hyphend}/${name.hyphend}-client.js',
+      target: '${script.dir}${name.hyphend}/${name.hyphend}-client.js',
       condition: (toolbox, contextData) => contextData.js,
     },
     {
       template: 'generators/script/styles.css.ejs',
-      target: '${name.hyphend}/${name.hyphend}.css',
+      target: '${script.dir}${name.hyphend}/${name.hyphend}.css',
       condition: (toolbox, contextData) => contextData.styles,
     },
   ],
@@ -48,7 +48,10 @@ export default <SimpleGenerator>{
       vars: '',
     })
 
-    context.script = conf.script
+    context.script = {
+      ...conf.script,
+      dir: conf.script.dir ? conf.script.dir + '/' : '',
+    }
     context.author = conf.author?.name || conf.author?.email ? conf.author : false
     context.vars = conf.vars !== 'false' ? conf.vars.split(',').map(v => toolbox.strings.camelCase(v || '')).filter(v => !!v) : false
     context.cssClass = context.name.hyphend
